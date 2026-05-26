@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Serli — Portofolio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Playfair Display"', 'serif'],
+            sans: ['"DM Sans"', 'sans-serif'],
+          },
+          colors: {
+            siren: { DEFAULT: '#006241', dark: '#004d33', light: '#1e3932' },
+            cream: { DEFAULT: '#f2f0eb', dark: '#e5e1d8' },
+            foam: '#faf8f5',
+            latte: '#d4a574',
+            espresso: '#3c2415',
+            mocha: '#6b4226',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #faf8f5;
+      color: #3c2415;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #faf8f5; }
+    ::-webkit-scrollbar-thumb { background: #006241; border-radius: 4px; }
+
+    /* Animasi muncul */
+    .muncul {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .muncul.aktif {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Uap kopi */
+    @keyframes uap {
+      0%   { opacity: 0; transform: translateY(0) scaleX(1); }
+      40%  { opacity: 0.5; }
+      100% { opacity: 0; transform: translateY(-40px) scaleX(1.5); }
+    }
+    .uap { animation: uap 2.8s ease-out infinite; }
+    .uap-d1 { animation-delay: 0s; }
+    .uap-d2 { animation-delay: 0.5s; }
+    .uap-d3 { animation-delay: 1s; }
+
+    /* Garis bawah dekoratif */
+    .garis-bawah::after {
+      content: '';
+      display: block;
+      width: 50px;
+      height: 3px;
+      background: #d4a574;
+      border-radius: 2px;
+      margin-top: 12px;
+    }
+
+    /* Kartu naik saat hover */
+    .kartu {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .kartu:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px -6px rgba(0,98,65,0.1);
+    }
+
+    /* Nav solid saat scroll */
+    .nav-aktif {
+      background: rgba(250,248,245,0.96) !important;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 1px 8px rgba(60,36,21,0.05);
+    }
+
+    /* Link underline */
+    .link-bawah { position: relative; }
+    .link-bawah::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 0;
+      width: 0; height: 2px;
+      background: #006241;
+      transition: width 0.25s ease;
+    }
+    .link-bawah:hover::after { width: 100%; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 20px; right: 20px;
+      padding: 12px 20px;
+      background: #006241;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 13px;
+      z-index: 999;
+      transform: translateY(60px);
+      opacity: 0;
+      transition: all 0.35s ease;
+    }
+    .toast.tampil {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Pola titik halus */
+    .pola-titik {
+      background-image: radial-gradient(circle, #006241 0.6px, transparent 0.6px);
+      background-size: 24px 24px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .muncul { transition: none; opacity: 1; transform: none; }
+      .uap { animation: none; }
+      .kartu { transition: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAVIGASI ===== -->
+  <nav id="nav" class="fixed top-0 w-full z-50 transition-all duration-300">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="#hero" class="font-serif font-bold text-xl text-siren">
+        <i class="fa-solid fa-mug-hot text-latte mr-1"></i>Serli
+      </a>
+      <div class="hidden md:flex items-center gap-6">
+        <a href="#tentang" class="link-bawah text-sm text-mocha hover:text-siren transition-colors">Tentang</a>
+        <a href="#keahlian" class="link-bawah text-sm text-mocha hover:text-siren transition-colors">Keahlian</a>
+        <a href="#proyek" class="link-bawah text-sm text-mocha hover:text-siren transition-colors">Proyek</a>
+        <a href="#kontak" class="px-5 py-2 bg-siren text-white text-sm font-medium rounded-lg hover:bg-siren-dark transition-colors">Kontak</a>
+      </div>
+      <button id="tombolMenu" class="md:hidden text-espresso text-lg" aria-label="Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+    <div id="menuMobile" class="md:hidden hidden bg-cream border-t border-cream-dark">
+      <div class="px-6 py-4 flex flex-col gap-3">
+        <a href="#tentang" class="text-sm text-mocha tutup-menu">Tentang</a>
+        <a href="#keahlian" class="text-sm text-mocha tutup-menu">Keahlian</a>
+        <a href="#proyek" class="text-sm text-mocha tutup-menu">Proyek</a>
+        <a href="#kontak" class="text-sm text-mocha tutup-menu">Kontak</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <section id="hero" class="min-h-screen flex items-center bg-cream relative overflow-hidden">
+    <!-- Pola titik dekoratif -->
+    <div class="absolute inset-0 pola-titik opacity-[0.03]"></div>
+    <!-- Lingkaran blur -->
+    <div class="absolute top-16 right-8 w-64 h-64 rounded-full bg-siren/5 blur-3xl"></div>
+    <div class="absolute bottom-16 left-8 w-48 h-48 rounded-full bg-latte/10 blur-3xl"></div>
+
+    <div class="relative z-10 max-w-5xl mx-auto px-6 py-28 grid md:grid-cols-2 gap-10 items-center">
+      <!-- Teks kiri -->
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-siren/10 mb-5 muncul">
+          <span class="w-1.5 h-1.5 rounded-full bg-siren"></span>
+          <span class="text-xs text-siren font-medium">Tersedia untuk proyek baru</span>
+        </div>
+        <h1 class="font-serif font-extrabold text-4xl sm:text-5xl lg:text-6xl leading-[1.08] text-espresso mb-4 muncul" style="transition-delay:.1s">
+          Halo, saya<br/><span class="text-siren">Serli</span>
+        </h1>
+        <p class="text-mocha/75 text-base sm:text-lg leading-relaxed mb-8 max-w-sm muncul" style="transition-delay:.2s">
+          Front-end developer yang percaya bahwa kode yang baik itu seperti secangkir kopi — dibuat dengan sabar, detail, dan cinta.
+        </p>
+        <div class="flex gap-3 muncul" style="transition-delay:.3s">
+          <a href="#proyek" class="px-6 py-3 bg-siren text-white text-sm font-medium rounded-lg hover:bg-siren-dark transition-colors">
+            Lihat Karya Saya
+          </a>
+          <a href="#tentang" class="px-6 py-3 border-2 border-siren/20 text-siren text-sm font-medium rounded-lg hover:border-siren hover:bg-siren/5 transition-colors">
+            Kenali Saya
+          </a>
+        </div>
+      </div>
+
+      <!-- Ilustrasi kopi kanan -->
+      <div class="flex justify-center muncul" style="transition-delay:.3s">
+        <div class="relative">
+          <!-- Uap -->
+          <div class="absolute -top-6 left-1/2 -translate-x-1/2 flex gap-2.5">
+            <div class="uap uap-d1 w-[2px] h-7 bg-latte/35 rounded-full"></div>
+            <div class="uap uap-d2 w-[2px] h-9 bg-latte/25 rounded-full"></div>
+            <div class="uap uap-d3 w-[2px] h-6 bg-latte/30 rounded-full"></div>
+          </div>
+          <!-- Cangkir bulat -->
+          <div class="w-44 h-44 sm:w-52 sm:h-52 rounded-full bg-gradient-to-br from-siren to-siren-dark flex items-center justify-center shadow-xl shadow-siren/15">
+            <div class="text-center text-white">
+              <i class="fa-solid fa-mug-hot text-4xl sm:text-5xl mb-2 opacity-90"></i>
+              <div class="font-serif font-bold text-xs tracking-widest opacity-75">SERLI.DEV</div>
+            </div>
+          </div>
+          <!-- Cincin putus-putus -->
+          <div class="absolute -inset-3 border-[1.5px] border-dashed border-latte/25 rounded-full" style="animation: spin 25s linear infinite;"></div>
+          @keyframes spin { to { transform: rotate(360deg); } }
+          <!-- Label -->
+          <div class="absolute -bottom-1 -right-1 bg-white rounded-lg px-2.5 py-1.5 shadow-md border border-cream-dark">
+            <div class="text-[9px] text-mocha/50">Minuman favorit</div>
+            <div class="text-[11px] font-semibold text-espresso">Iced Latte</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TENTANG ===== -->
+  <section id="tentang" class="py-20 bg-foam">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="grid md:grid-cols-5 gap-10 items-center">
+        <!-- Foto -->
+        <div class="md:col-span-2 muncul">
+          <div class="relative max-w-[280px] mx-auto">
+            <div class="rounded-2xl overflow-hidden aspect-[3/4] border-2 border-latte/25">
+              <img src="foto/WhatsApp Image 2026-05-26 at 10.26.21.jpeg" alt="Serli" class="w-full h-full object-cover" />
+            </div>
+            <div class="absolute -bottom-2 -right-2 w-full h-full border-2 border-siren/10 rounded-2xl -z-10"></div>
+          </div>
+        </div>
+        <!-- Teks -->
+        <div class="md:col-span-3">
+          <h2 class="font-serif font-bold text-2xl sm:text-3xl text-espresso garis-bawah mb-5 muncul">Tentang Saya</h2>
+          <p class="text-mocha/75 leading-relaxed mb-3 muncul" style="transition-delay:.1s">
+            Nama saya Serli. Saya seorang front-end developer berbasis di batam. Sebelum masuk ke dunia teknologi, saya bekerja sebagai barista — dan saya rasa itu membentuk cara saya bekerja sekarang.
+          </p>
+          <p class="text-mocha/75 leading-relaxed mb-6 muncul" style="transition-delay:.15s">
+            Saya peduli pada detail kecil, saya suka menyajikan sesuatu yang rapi, dan saya tahu bahwa pengalaman pengguna itu penting — persis seperti menyajikan secangkir kopi yang sempurna.
+          </p>
+          <div class="grid grid-cols-2 gap-3 muncul" style="transition-delay:.2s">
+            <div class="p-3 rounded-xl bg-cream border border-latte/15">
+              <div class="text-[10px] text-mocha/45 mb-0.5">Lokasi</div>
+              <div class="text-sm font-medium text-espresso">Jakarta, ID</div>
+            </div>
+            <div class="p-3 rounded-xl bg-cream border border-latte/15">
+              <div class="text-[10px] text-mocha/45 mb-0.5">Pengalaman</div>
+              <div class="text-sm font-medium text-espresso">3 tahun</div>
+            </div>
+            <div class="p-3 rounded-xl bg-cream border border-latte/15">
+              <div class="text-[10px] text-mocha/45 mb-0.5">Fokus</div>
+              <div class="text-sm font-medium text-siren">Front-End Dev</div>
+            </div>
+            <div class="p-3 rounded-xl bg-cream border border-latte/15">
+              <div class="text-[10px] text-mocha/45 mb-0.5">Hobi</div>
+              <div class="text-sm font-medium text-espresso">Ngopi & Baca</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== KEAHLIAN ===== -->
+  <section id="keahlian" class="py-20 bg-cream">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="text-center mb-12">
+        <h2 class="font-serif font-bold text-2xl sm:text-3xl text-espresso muncul">Keahlian</h2>
+        <p class="text-mocha/50 text-sm mt-2 muncul" style="transition-delay:.1s">Teknologi yang saya gunakan sehari-hari.</p>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4" id="skillGrid"></div>
+    </div>
+  </section>
+
+  <!-- ===== PROYEK ===== -->
+  <section id="proyek" class="py-20 bg-foam">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="text-center mb-12">
+        <h2 class="font-serif font-bold text-2xl sm:text-3xl text-espresso muncul">Proyek Saya</h2>
+        <p class="text-mocha/50 text-sm mt-2 muncul" style="transition-delay:.1s">Beberapa karya yang saya bangun.</p>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-5" id="projectGrid"></div>
+    </div>
+  </section>
+
+  <!-- ===== QUOTE ===== -->
+  <section class="py-16 bg-siren relative overflow-hidden">
+    <div class="absolute inset-0 pola-titik opacity-[0.06]"></div>
+    <div class="relative z-10 max-w-2xl mx-auto px-6 text-center muncul">
+      <i class="fa-solid fa-quote-left text-2xl text-white/15 mb-4 block"></i>
+      <p class="font-serif text-xl sm:text-2xl text-white/90 leading-relaxed italic mb-4">
+        "Kode yang rapi itu seperti latte art — kalau detailnya benar, hasilnya menyenangkan dipandang."
+      </p>
+      <span class="text-white/40 text-sm">— Serli</span>
+    </div>
+  </section>
+
+  <!-- ===== KONTAK ===== -->
+  <section id="kontak" class="py-20 bg-cream">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="grid md:grid-cols-2 gap-12">
+        <!-- Info -->
+        <div>
+          <h2 class="font-serif font-bold text-2xl sm:text-3xl text-espresso garis-bawah mb-5 muncul">Hubungi Saya</h2>
+          <p class="text-mocha/70 text-sm leading-relaxed mb-7 muncul" style="transition-delay:.1s">
+            Berikut adalah tempat lokasi dan tempat untuk menghubungi saya.
+          </p>
+          <div class="space-y-4 muncul" style="transition-delay:.15s">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-siren/10 flex items-center justify-center text-siren text-sm"><i class="fa-solid fa-envelope"></i></div>
+              <div>
+                <div class="text-[10px] text-mocha/40">Email</div>
+                <div class="text-sm font-medium">serrliii375@email.com</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-siren/10 flex items-center justify-center text-siren text-sm"><i class="fa-solid fa-phone"></i></div>
+              <div>
+                <div class="text-[10px] text-mocha/40">Telepon</div>
+                <div class="text-sm font-medium">+62 819 1748 3131</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-siren/10 flex items-center justify-center text-siren text-sm"><i class="fa-solid fa-location-dot"></i></div>
+              <div>
+                <div class="text-[10px] text-mocha/40">Lokasi</div>
+                <div class="text-sm font-medium">Batam</div>
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-2.5 mt-7 muncul" style="transition-delay:.2s">
+            <a href="#" class="w-9 h-9 rounded-lg bg-foam border border-latte/15 flex items-center justify-center text-mocha hover:text-siren hover:border-siren/30 transition-colors" aria-label="GitHub"><i class="fa-brands fa-github text-sm"></i></a>
+            <a href="#" class="w-9 h-9 rounded-lg bg-foam border border-latte/15 flex items-center justify-center text-mocha hover:text-siren hover:border-siren/30 transition-colors" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in text-sm"></i></a>
+            <a href="#" class="w-9 h-9 rounded-lg bg-foam border border-latte/15 flex items-center justify-center text-mocha hover:text-siren hover:border-siren/30 transition-colors" aria-label="Instagram"><i class="fa-brands fa-instagram text-sm"></i></a>
+            <a href="#" class="w-9 h-9 rounded-lg bg-foam border border-latte/15 flex items-center justify-center text-mocha hover:text-siren hover:border-siren/30 transition-colors" aria-label="Dribbble"><i class="fa-brands fa-dribbble text-sm"></i></a>
+          </div>
+        </div>
+
+        <!-- Form -->
+        <div class="muncul" style="transition-delay:.2s">
+          <form id="formKontak" class="space-y-4">
+            <div>
+              <label for="nama" class="text-[10px] text-mocha/45 mb-1 block font-medium">Nama</label>
+              <input type="text" id="nama" required placeholder="Nama lengkap Anda"
+                class="w-full px-4 py-2.5 rounded-lg bg-foam border border-latte/15 text-espresso text-sm placeholder:text-mocha/25 focus:outline-none focus:border-siren transition-colors" />
+            </div>
+            <div>
+              <label for="email" class="text-[10px] text-mocha/45 mb-1 block font-medium">Email</label>
+              <input type="email" id="email" required placeholder="email@anda.com"
+                class="w-full px-4 py-2.5 rounded-lg bg-foam border border-latte/15 text-espresso text-sm placeholder:text-mocha/25 focus:outline-none focus:border-siren transition-colors" />
+            </div>
+            <div>
+              <label for="pesan" class="text-[10px] text-mocha/45 mb-1 block font-medium">Pesan</label>
+              <textarea id="pesan" rows="5" required placeholder="Tulis pesan Anda di sini..."
+                class="w-full px-4 py-2.5 rounded-lg bg-foam border border-latte/15 text-espresso text-sm placeholder:text-mocha/25 focus:outline-none focus:border-siren transition-colors resize-none"></textarea>
+            </div>
+            <button type="submit" class="w-full py-2.5 bg-siren text-white text-sm font-medium rounded-lg hover:bg-siren-dark transition-colors flex items-center justify-center gap-2">
+              <i class="fa-solid fa-paper-plane text-xs"></i> Kirim Pesan
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="py-6 bg-siren-dark text-white/30 text-center text-xs">
+    <div class="max-w-5xl mx-auto px-6">
+      &copy; 2024 Serli. Dibuat dengan <i class="fa-solid fa-mug-hot text-latte/40 mx-0.5"></i> dan semangat.
+    </div>
+  </footer>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <i class="fa-solid fa-circle-check mr-1.5"></i><span id="toastPesan"></span>
+  </div>
+
+  <script>
+    // ========================
+    // DATA KEAHLIAN
+    // ========================
+    const keahlian = [
+      { nama: 'HTML', icon: 'fa-brands fa-html5' },
+      { nama: 'CSS', icon: 'fa-brands fa-css3-alt' },
+      { nama: 'JavaScript', icon: 'fa-brands fa-js' },
+      { nama: 'React', icon: 'fa-brands fa-react' },
+      { nama: 'Tailwind', icon: 'fa-solid fa-wind' },
+      { nama: 'Figma', icon: 'fa-brands fa-figma' },
+    ];
+
+    const skillGrid = document.getElementById('skillGrid');
+    keahlian.forEach((k, i) => {
+      const el = document.createElement('div');
+      el.className = 'kartu p-4 rounded-xl bg-foam border border-latte/15 text-center muncul';
+      el.style.transitionDelay = (i * 0.07) + 's';
+      el.innerHTML = `
+        <i class="${k.icon} text-2xl text-siren mb-2 block"></i>
+        <span class="text-xs font-medium text-espresso">${k.nama}</span>
+      `;
+      skillGrid.appendChild(el);
+    });
+
+    // ========================
+    // DATA PROYEK
+    // ========================
+    const proyek = [
+      {
+        judul: 'KopiKu — Pesan Online',
+        deskripsi: 'Aplikasi pemesanan kopi dengan custom drink, estimasi waktu, dan riwayat pesanan pengguna.',
+        gambar: 'https://picsum.photos/seed/serli-kopiku/600/400.jpg',
+        tag: ['React', 'Tailwind', 'Firebase'],
+      },
+      {
+        judul: 'RoastLog — Catatan Roasting',
+        deskripsi: 'Web app untuk mencatat profil roasting: suhu, durasi, dan catatan rasa per batch.',
+        gambar: 'https://picsum.photos/seed/serli-roast/600/400.jpg',
+        tag: ['Vue.js', 'Supabase'],
+      },
+      {
+        judul: 'CafeFinder — Peta Kafe',
+        deskripsi: 'Website pencarian kafe terdekat dengan filter berdasarkan rating, wifi, dan suasana.',
+        gambar: 'https://picsum.photos/seed/serli-cafe/600/400.jpg',
+        tag: ['Next.js', 'Mapbox'],
+      },
+      {
+        judul: 'BrewGuide — UI Kit',
+        deskripsi: 'Design system bertema kopi: 50+ komponen, warna hangat, dan siap pakai di Figma.',
+        gambar: 'https://picsum.photos/seed/serli-brew/600/400.jpg',
+        tag: ['Figma', 'UI Kit'],
+      },
+    ];
+
+    const projectGrid = document.getElementById('projectGrid');
+    proyek.forEach((p, i) => {
+      const el = document.createElement('article');
+      el.className = 'kartu rounded-2xl overflow-hidden bg-foam border border-latte/15 muncul';
+      el.style.transitionDelay = (i * 0.1) + 's';
+      el.innerHTML = `
+        <div class="overflow-hidden aspect-[3/2]">
+          <img src="${p.gambar}" alt="${p.judul}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" loading="lazy" />
+        </div>
+        <div class="p-4">
+          <h3 class="font-serif font-semibold text-espresso mb-1">${p.judul}</h3>
+          <p class="text-xs text-mocha/55 leading-relaxed mb-3">${p.deskripsi}</p>
+          <div class="flex flex-wrap gap-1.5">
+            ${p.tag.map(t => `<span class="px-2 py-0.5 text-[10px] font-medium rounded bg-cream border border-latte/15 text-mocha/60">${t}</span>`).join('')}
+          </div>
+        </div>
+      `;
+      projectGrid.appendChild(el);
+    });
+
+    // ========================
+    // SCROLL REVEAL
+    // ========================
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('aktif');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.muncul').forEach(el => observer.observe(el));
+
+    // ========================
+    // NAVIGASI
+    // ========================
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('nav-aktif', window.scrollY > 40);
+    });
+
+    // Mobile menu
+    const tombolMenu = document.getElementById('tombolMenu');
+    const menuMobile = document.getElementById('menuMobile');
+    tombolMenu.addEventListener('click', () => {
+      menuMobile.classList.toggle('hidden');
+      const ikon = tombolMenu.querySelector('i');
+      ikon.classList.toggle('fa-bars');
+      ikon.classList.toggle('fa-xmark');
+    });
+    document.querySelectorAll('.tutup-menu').forEach(link => {
+      link.addEventListener('click', () => {
+        menuMobile.classList.add('hidden');
+        const ikon = tombolMenu.querySelector('i');
+        ikon.classList.add('fa-bars');
+        ikon.classList.remove('fa-xmark');
+      });
+    });
+
+    // ========================
+    // FORM
+    // ========================
+    document.getElementById('formKontak').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const nama = document.getElementById('nama').value.trim();
+      if (!nama) return;
+      tampilkanToast(`Terima kasih, ${nama}! Pesan Anda sudah terkirim.`);
+      this.reset();
+    });
+
+    function tampilkanToast(pesan) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastPesan').textContent = pesan;
+      toast.classList.add('tampil');
+      setTimeout(() => toast.classList.remove('tampil'), 3000);
+    }
+  </script>
+</body>
+</html>
